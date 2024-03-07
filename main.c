@@ -6,8 +6,9 @@
 #define MAX_KEYWORD_LEN 10
 int validationState = 1;
 
-typedef struct {
+typedef struct KeywordEntry {
     char keyword[MAX_KEYWORD_LEN];
+    void (*fn)();
 } KeywordEntry;
 
 typedef int (*PrintCallback)(const char *, KeywordEntry tabela[]);
@@ -20,21 +21,38 @@ void inicializarTabela(KeywordEntry t[]) {
 
 int funcaoHash(const char *chave) {
     int hash = 0;
-    int i;
-    for(i = 0; chave[i] != '\0'; i++)
+    for(int i = 0; chave[i] != '\0'; i++)
         hash = (hash * 31 + chave[i]) % TAM;
 
     return hash;
 }
 
-void inserir(KeywordEntry t[], char *keyword) {
+void aa () {
+    printf("asdasda \n");
+}
+
+void inserir(KeywordEntry t[], char *keyword, void (*fn)()) {
     KeywordEntry entrada;
     strcpy(entrada.keyword, keyword);
+    entrada.fn = fn; // Atribui a função fornecida ao membro 'fn' da entrada
     int id = funcaoHash(keyword);
     while(t[id].keyword[0] != '\0' && strcmp(t[id].keyword, keyword) != 0){
         id = (id + 1) % TAM;
     }
     strcpy(t[id].keyword, keyword);
+    t[id].fn = entrada.fn; // Atribui a função ao membro 'fn' da tabela
+}
+
+void inserir_sem_funcao(KeywordEntry t[], char *keyword) {
+    KeywordEntry entrada;
+    strcpy(entrada.keyword, keyword);
+    entrada.fn = NULL; // Define o ponteiro de função como NULL, indicando nenhuma função associada
+    int id = funcaoHash(keyword);
+    while(t[id].keyword[0] != '\0' && strcmp(t[id].keyword, keyword) != 0){
+        id = (id + 1) % TAM;
+    }
+    strcpy(t[id].keyword, keyword);
+    t[id].fn = entrada.fn; // Atribui NULL ao membro 'fn' da tabela
 }
 
 void imprimir(KeywordEntry t[]) {
@@ -46,26 +64,29 @@ void imprimir(KeywordEntry t[]) {
     }
 }
 
-int busca(KeywordEntry t[],const char *chave) {
+void *busca(KeywordEntry t[], const char *chave) {
     int id = funcaoHash(chave);
     printf("\nIndice gerado: %d\n", id);
     while (t[id].keyword[0] != '\0') {
         if (strcmp(t[id].keyword, chave) == 0) {
             printf("Palavra chave encontrada: %s\n", chave);
-            return 1;
+            return t[id].fn;
         } else {
             id = (id + 1) % TAM;
         }
     }
     printf("Palavra chave nao encontrada: %s\n", chave);
-    return 0; 
+    return NULL;
 }
 
 
 int printCallback(const char *str, KeywordEntry tabela[]) {
     if(validationState) {
-        int search = busca(tabela, str);
-        if(!search) {
+        void (*funcao)();
+        funcao = busca(tabela, str);
+        if(funcao != NULL) {
+            funcao(); 
+        } else {
             validationState = 0;
             return 0;
         }
@@ -119,7 +140,7 @@ int createToken(KeywordEntry tabela[TAM]) {
     inicializarTabela(tabela);
     char *InitialTokens[3] = {"let", "const", "import"};
     for(int i = 0; i < 3; i++) {
-        inserir(tabela, InitialTokens[i]);
+        inserir(tabela, InitialTokens[i], aa);
     }
     return 0;
 }
