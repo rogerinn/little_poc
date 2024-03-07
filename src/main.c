@@ -1,15 +1,11 @@
 #include <stdio.h>
 #include <string.h>
-#include "dot_verify.c"
+#include "struct_map.h"
+#include "dot_verify.h"
 
 #define TAM 31
-#define MAX_KEYWORD_LEN 10
+#define MAX_KEYWORD_LEN 50
 int validationState = 1;
-
-typedef struct KeywordEntry {
-    char keyword[MAX_KEYWORD_LEN];
-    void (*fn)();
-} KeywordEntry;
 
 typedef int (*PrintCallback)(const char *, KeywordEntry tabela[]);
 
