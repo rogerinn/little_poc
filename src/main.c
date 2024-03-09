@@ -15,12 +15,27 @@ int (*FnInBlock)(const char *str, enum Tokens *tokens_enum, Syntax *Syntax);
 
 const char specialChars[] = "\\\"\'`()<>|{}[];.=+-/*?%$&#@!_-:,~";
 
+typedef struct TokensRule {
+    char next_tokens[10][20];
+    int next_token_count;
+} TokensRule;
+
+struct SyntaxRule {
+    char keyword[20];
+    TokensRule tokens;
+};
+
+struct SyntaxRule syntax_table[] = {
+    {"let",   {{"VariableExpr", "=", "\"", "VariableExpr", "\""}, 5} },
+    {"const", {{"VariableExpr", "=", "\"", "VariableExpr", "\""}, 5} }
+};
+
 void resetSyntax(enum Tokens *fn, Syntax *syntax) {
     strcpy(syntax->let.token, "");
     strcpy(syntax->let.VariableExpr, "");
     strcpy(syntax->let.TermExpr, "");
     for (int i = 0; i < syntax->let.OperatorsCount; i++) {
-        strcpy(syntax->let.Operators[i], ""); // Define cada elemento como uma string vazia
+        strcpy(syntax->let.Operators[i], "");
     }
     syntax->let.OperatorsCount = 0;
     syntax->let.count = 0;
@@ -28,23 +43,12 @@ void resetSyntax(enum Tokens *fn, Syntax *syntax) {
     *fn = BLANK;
 }
 
-struct SyntaxRule {
-    char keyword[20];
-    char next_tokens[10][20];
-    int next_token_count;
-};
-
-struct SyntaxRule syntax_table[] = {
-    {"let", {"VariableExpr", "=", "\"", "VariableExpr", "\""}, 5},
-    {"const", {"VariableExpr", "=", "\"", "VariableExpr", "\""}, 5}
-};
-
 int FnLet(const char *str, enum Tokens *fn, Syntax *syntax) {
     static int counter, OpCodesCounter;
     if(*fn == BLANK) {
         *fn = LET;
         strcpy(syntax->let.token, syntax_table[LET].keyword);
-        syntax->let.count = syntax_table[LET].next_token_count; 
+        syntax->let.count = syntax_table[LET].tokens.next_token_count; 
         syntax->let.OperatorsCount = 3; 
         counter = 0;
         OpCodesCounter = 0;
@@ -54,7 +58,7 @@ int FnLet(const char *str, enum Tokens *fn, Syntax *syntax) {
     if(counter >= (syntax->let.count -1)){ 
         resetSyntax(fn, syntax);
     }
-    if (strcmp(syntax_table[LET].next_tokens[counter], "VariableExpr") == 0) { 
+    if (strcmp(syntax_table[LET].tokens.next_tokens[counter], "VariableExpr") == 0) { 
         if(strcspn(str, specialChars) != strlen(str)) {
             return 1;
         }
@@ -63,7 +67,7 @@ int FnLet(const char *str, enum Tokens *fn, Syntax *syntax) {
         counter++;
         return 0;
     }
-    if (strcmp(str,syntax_table[LET].next_tokens[counter]) == 0) {
+    if (strcmp(str,syntax_table[LET].tokens.next_tokens[counter]) == 0) {
         strcpy(syntax->let.Operators[OpCodesCounter], str);
         printf("Opcode signal: %s\n", syntax->let.Operators[OpCodesCounter]);
         counter++;
@@ -71,12 +75,12 @@ int FnLet(const char *str, enum Tokens *fn, Syntax *syntax) {
     } 
 }
 
-int printCallback(const char *str, KeywordEntry tabela[], int *continueTabela, enum Tokens *tokens_enum, Syntax *Syntax) {
+int printCallback(const char *str, KeywordEntry tabela[], int *continueTabela, enum Tokens *tokens_enum, Syntax *syntax) {
     if(*continueTabela) {
         void *funcao = busca(tabela, str);
         if(funcao != NULL && *tokens_enum == BLANK) {
             FnInBlock = &FnLet;
-            int teste = FnLet(str, tokens_enum, Syntax); 
+            int teste = FnLet(str, tokens_enum, syntax); 
             if(teste) {
                 *continueTabela = 0;
                 printf("Nao e possivel usar caracteres especiais para nomear '%s' \n", str);
@@ -85,7 +89,7 @@ int printCallback(const char *str, KeywordEntry tabela[], int *continueTabela, e
             return 0;
         }
         if(funcao == NULL && *tokens_enum != BLANK) {
-            int teste = FnInBlock(str, tokens_enum, Syntax);
+            int teste = FnInBlock(str, tokens_enum, syntax);
             if(teste) {
                 *continueTabela = 0;
                 printf("Nao e possivel usar caracteres especiais para nomear '%s' \n", str);
