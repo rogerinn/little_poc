@@ -1,1 +1,2 @@
-console.log('aaa')
+let name = "rogerio"
+const name1 = "Rogerio"

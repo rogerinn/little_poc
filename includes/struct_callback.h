@@ -2,8 +2,8 @@
 #define STRUCT_CALLBACK_H
 #include "struct_map.h"
 #include "tokens_enum.h"
-#include "letSyntax.h"
+#include "syntax.h"
 
-typedef int (*PrintCallback)(const char *str, KeywordEntry tabela[], int *continueTabela, enum Tokens *tokens_enum, LetSyntax *letSyntax);
+typedef int (*PrintCallback)(const char *str, KeywordEntry tabela[], int *continueTabela, enum Tokens *tokens_enum, Syntax *letSyntax);
 
 #endif
