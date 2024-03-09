@@ -11,7 +11,14 @@
 
 #define TAM 31
 
+
 int (*FnInBlock)(const char *str, enum Tokens *tokens_enum, Syntax *Syntax);
+
+void resetSyntax(enum Tokens *fn, Syntax *syntax) {
+    memset(syntax, 0, sizeof(Syntax));
+    FnInBlock = NULL;
+    *fn = BLANK;
+}
 
 const char specialChars[] = "\\\"\'`()<>|{}[];.=+-/*?%$&#@!_-:,~";
 
@@ -22,93 +29,102 @@ typedef struct TokensRule {
 
 struct SyntaxRule {
     char keyword[20];
-    TokensRule tokens;
+    TokensRule tokens[100];
+    int totalSyntaxes;
 };
 
 struct SyntaxRule syntax_table[] = {
-    {"let",   {{"VariableExpr", "=", "\"", "VariableExpr", "\""}, 5} },
-    {"const", {{"VariableExpr", "=", "\"", "VariableExpr", "\""}, 5} }
+    {
+        "let", {
+                {{"VariableExpr", "=", "VariableExpr", "=", ">", "{", "VariableExpr", "}"}, 8},
+                {{"VariableExpr", "=", "VariableExpr", "=", ">", "{", "}"}, 7},
+                {{"VariableExpr", "=", "VariableExpr"}, 3}, 
+                {{"VariableExpr", "=", "\"", "VariableExpr", "\""}, 5}, 
+                {{"VariableExpr", "=", "\'", "VariableExpr", "\'"}, 5}, 
+                {{"VariableExpr", "=", "[", "VariableExpr", "]"}, 5},
+                {{"VariableExpr", "=", "[", "]"}, 4}
+            }, 7
+    },
+    {
+        "const", {
+            {{"VariableExpr", "=", "\"", "VariableExpr", "\""}, 5}, 
+            {{"VariableExpr", "=", "\'", "VariableExpr", "\'"}, 5}
+        }, 2
+    }
 };
 
-void resetSyntax(enum Tokens *fn, Syntax *syntax) {
-    strcpy(syntax->let.token, "");
-    strcpy(syntax->let.VariableExpr, "");
-    strcpy(syntax->let.TermExpr, "");
-    for (int i = 0; i < syntax->let.OperatorsCount; i++) {
-        strcpy(syntax->let.Operators[i], "");
+void checkCounter (int count, int syntaxCount, enum Tokens *fn, Syntax *syntax) {
+    if(count == syntaxCount){ 
+        resetSyntax(fn, syntax);
     }
-    syntax->let.OperatorsCount = 0;
-    syntax->let.count = 0;
-    FnInBlock = NULL;
-    *fn = BLANK;
 }
 
 int FnLet(const char *str, enum Tokens *fn, Syntax *syntax) {
-    static int counter, OpCodesCounter;
-    if(*fn == BLANK) {
-        *fn = LET;
-        strcpy(syntax->let.token, syntax_table[LET].keyword);
-        syntax->let.count = syntax_table[LET].tokens.next_token_count; 
-        syntax->let.OperatorsCount = 3; 
-        counter = 0;
-        OpCodesCounter = 0;
-        printf("OpBlock: %s\n", str);   
-        return 0;
-    } 
-    if(counter >= (syntax->let.count -1)){ 
-        resetSyntax(fn, syntax);
-    }
-    if (strcmp(syntax_table[LET].tokens.next_tokens[counter], "VariableExpr") == 0) { 
-        if(strcspn(str, specialChars) != strlen(str)) {
-            return 1;
+    for(int i = 0; i < syntax_table[LET].totalSyntaxes; i++) {
+        static int counter, OpCodesCounter;
+        if(*fn == BLANK) {
+            *fn = LET;
+            syntax->let.OperatorsCount = 3; 
+            syntax->let.count = syntax_table[LET].tokens[i].next_token_count;
+            counter = 0;
+            OpCodesCounter = 0;
+            printf("OpBlock: %s\n", str);   
+            return 0;
         }
-        strcpy(syntax->let.VariableExpr, str);
-        printf("Opcode VariableExpr: %s\n", syntax->let.VariableExpr);
-        counter++;
-        return 0;
+        if(*fn == LET) {
+            strcpy(syntax->let.token, syntax_table[LET].keyword);
+            syntax->let.count = syntax_table[LET].tokens[i].next_token_count; 
+        }
+        if (strcmp(syntax_table[LET].tokens[i].next_tokens[counter], "VariableExpr") == 0) { 
+            if(strcspn(str, specialChars) != strlen(str)) {
+                if (i < syntax_table[LET].totalSyntaxes) {
+                    continue;
+                }
+                return 1;
+            }
+            strcpy(syntax->let.VariableExpr, str);
+            printf("Opcode VariableExpr: %s\n", syntax->let.VariableExpr);
+            counter++;
+            checkCounter(counter, syntax->let.count, fn, syntax);
+            return 0;
+        }
+        if (strcmp(str,syntax_table[LET].tokens[i].next_tokens[counter]) == 0) {
+            strcpy(syntax->let.Operators[OpCodesCounter], str);
+            printf("Opcode signal: %s\n", syntax->let.Operators[OpCodesCounter]);
+            counter++;
+            checkCounter(counter, syntax->let.count, fn, syntax);
+            return 0;
+        }
     }
-    if (strcmp(str,syntax_table[LET].tokens.next_tokens[counter]) == 0) {
-        strcpy(syntax->let.Operators[OpCodesCounter], str);
-        printf("Opcode signal: %s\n", syntax->let.Operators[OpCodesCounter]);
-        counter++;
-        return 0;
-    } 
 }
 
-int printCallback(const char *str, KeywordEntry tabela[], int *continueTabela, enum Tokens *tokens_enum, Syntax *syntax) {
+void printCallback(const char *str, KeywordEntry tabela[], int *continueTabela, enum Tokens *tokens_enum, Syntax *syntax) {
     if(*continueTabela) {
         void *funcao = busca(tabela, str);
+        if(funcao == NULL && *tokens_enum == BLANK) {
+            *continueTabela = 0;
+            printf("Nenhuma instrucao inicial foi encontrada\n");
+        } 
+        if(funcao != NULL && *tokens_enum != BLANK) {
+            *continueTabela = 0;
+            printf("Nao e possivel usar duas instrucoes: %s\n", str);
+        }
         if(funcao != NULL && *tokens_enum == BLANK) {
             FnInBlock = &FnLet;
             int teste = FnLet(str, tokens_enum, syntax); 
             if(teste) {
                 *continueTabela = 0;
                 printf("Nao e possivel usar caracteres especiais para nomear '%s' \n", str);
-                return 1;
             }
-            return 0;
         }
         if(funcao == NULL && *tokens_enum != BLANK) {
             int teste = FnInBlock(str, tokens_enum, syntax);
             if(teste) {
                 *continueTabela = 0;
                 printf("Nao e possivel usar caracteres especiais para nomear '%s' \n", str);
-                return 1;
             }
-            return 0;
         }
-        if(funcao != NULL && *tokens_enum != BLANK) {
-            *continueTabela = 0;
-            printf("Nao e possivel usar duas instrucoes: %s\n", str);
-            return 1;
-        }
-        if(funcao == NULL && *tokens_enum == BLANK) {
-            *continueTabela = 0;
-            printf("Nenhuma instrucao inicial foi encontrada\n");
-            return 1;
-        } 
     }
-    return 1;
 }
 
 int main(int argc, char *argv[]) {

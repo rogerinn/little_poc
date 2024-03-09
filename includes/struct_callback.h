@@ -4,6 +4,6 @@
 #include "tokens_enum.h"
 #include "syntax.h"
 
-typedef int (*PrintCallback)(const char *str, KeywordEntry tabela[], int *continueTabela, enum Tokens *tokens_enum, Syntax *letSyntax);
+typedef void (*PrintCallback)(const char *str, KeywordEntry tabela[], int *continueTabela, enum Tokens *tokens_enum, Syntax *letSyntax);
 
 #endif
