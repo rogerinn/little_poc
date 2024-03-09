@@ -12,15 +12,10 @@ typedef struct VariableSyntax {
     char Operators[MAX_OPERATORS][MAX_OPERATOR_LEN];
     char TermExpr[MAX_EXPR_LEN];
     int OperatorsCount;
-    int *count;
+    int count;
 } VariableSyntax;
 
 typedef struct Syntax {
-    char token[MAX_EXPR_LEN];
-    char VariableExpr[MAX_EXPR_LEN];
-    char operator[MAX_EXPR_LEN];
-    char TermExpr[MAX_EXPR_LEN];
-    int count;
     VariableSyntax let;
 } Syntax;
 

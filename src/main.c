@@ -16,11 +16,14 @@ int (*FnInBlock)(const char *str, enum Tokens *tokens_enum, Syntax *Syntax);
 const char specialChars[] = "\\\"\'`()<>|{}[];.=+-/*?%$&#@!_-:,~";
 
 void resetSyntax(enum Tokens *fn, Syntax *syntax) {
-    strcpy(syntax->token, "");
-    strcpy(syntax->VariableExpr, "");
-    strcpy(syntax->operator, "");
-    strcpy(syntax->TermExpr, "");
-    syntax->count = 0;
+    strcpy(syntax->let.token, "");
+    strcpy(syntax->let.VariableExpr, "");
+    strcpy(syntax->let.TermExpr, "");
+    for (int i = 0; i < syntax->let.OperatorsCount; i++) {
+        strcpy(syntax->let.Operators[i], ""); // Define cada elemento como uma string vazia
+    }
+    syntax->let.OperatorsCount = 0;
+    syntax->let.count = 0;
     FnInBlock = NULL;
     *fn = BLANK;
 }
@@ -40,17 +43,15 @@ int FnLet(const char *str, enum Tokens *fn, Syntax *Syntax) {
     static int counter, OpCodesCounter;
     if(*fn == BLANK) {
         *fn = LET;
-        strcpy(Syntax->token, syntax_table[LET].keyword);
         strcpy(Syntax->let.token, syntax_table[LET].keyword);
-        Syntax->count = syntax_table[LET].next_token_count; 
-        Syntax->let.count = &Syntax->count; 
+        Syntax->let.count = syntax_table[LET].next_token_count; 
         Syntax->let.OperatorsCount = 3; 
         counter = 0;
         OpCodesCounter = 0;
         printf("OpBlock: %s\n", str);   
         return 0;
     } 
-    if(counter >= (Syntax->count -1)){ 
+    if(counter >= (Syntax->let.count -1)){ 
         resetSyntax(fn, Syntax);
     }
     if (strcmp(syntax_table[LET].next_tokens[counter], "VariableExpr") == 0) { 
