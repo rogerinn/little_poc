@@ -1,13 +1,7 @@
-let name = 'Melissa'
+let aa = (a, a) => { 
+    let name = "Rogerio";
 
-let name1 = 'Melissa'
+    let name1 = "Melissa";
+};
 
-let name2 = Blobb => {}
-
-let name1 = 'Melissa'
-
-let name1 = []
-
-let name1 = [1]
-
-
+let name = [1,2,3,4];

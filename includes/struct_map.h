@@ -6,6 +6,7 @@
 typedef struct KeywordEntry {
     char keyword[MAX_KEYWORD_LEN];
     void (*fn)();
+    int id;
 } KeywordEntry;
 
 #endif

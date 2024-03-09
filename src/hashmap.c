@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "hashmap.h"
+#include "tokens_enum.h"
 
 #define TAM 31
 
@@ -22,16 +23,18 @@ int funcaoHash(const char *chave) {
     return hash;
 }
 
-void inserir(KeywordEntry t[], char *keyword, void (*fn)()) {
+void inserir(KeywordEntry t[], char *keyword, void (*fn)(), int fnId) {
     KeywordEntry entrada;
     strcpy(entrada.keyword, keyword);
     entrada.fn = fn; 
+    entrada.id = fnId;
     int id = funcaoHash(keyword);
     while(t[id].keyword[0] != '\0' && strcmp(t[id].keyword, keyword) != 0){
         id = (id + 1) % TAM;
     }
     strcpy(t[id].keyword, keyword);
     t[id].fn = entrada.fn; 
+    t[id].id = entrada.id;
 }
 
 void inserir_sem_funcao(KeywordEntry t[], char *keyword) {
@@ -59,7 +62,7 @@ void *busca(KeywordEntry t[], const char *chave) {
     int id = funcaoHash(chave);
     while (t[id].keyword[0] != '\0') {
         if (strcmp(t[id].keyword, chave) == 0) {
-            return t[id].fn;
+            return &(t[id]);
         } else {
             id = (id + 1) % TAM;
         }
@@ -67,11 +70,12 @@ void *busca(KeywordEntry t[], const char *chave) {
     return NULL;
 }
 
-int createToken(KeywordEntry tabela[TAM]) {
+int createToken(KeywordEntry tabela[]) {
     inicializarTabela(tabela);
     char *InitialTokens[3] = {"let", "const", "import"};
+    Tokens ids[3] = {LET, CONST, IMPORT};
     for(int i = 0; i < 3; i++) {
-        inserir(tabela, InitialTokens[i], aa);
+        inserir(tabela, InitialTokens[i], aa, ids[i]);
     }
     return 0;
 }

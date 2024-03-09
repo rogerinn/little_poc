@@ -6,9 +6,9 @@
 #include "syntax.h"
 #include "loadfile.h"
 
-void processToken(const char* token, LoadFileContext* context) {
+void processToken(char* token, LoadFileContext* context) {
     if (strlen(token) == 1 && strchr(context->keep_delimiters, token[0]) != NULL) {
-        context->callback(token, context->tabela, context->continueTabela, context->tokens_enum, context->teste);
+        context->callback(token, context->tabela, context->continueTabela, context->tokens_enum, context->teste, context->inBlock, context->lastToken);
         return;
     }
     
@@ -21,16 +21,16 @@ void processToken(const char* token, LoadFileContext* context) {
         if (strchr(context->keep_delimiters, token[i]) != NULL) {
             if (buffer_index > 0) {
                 buffer_token[buffer_index] = '\0';
-                context->callback(buffer_token, context->tabela, context->continueTabela, context->tokens_enum, context->teste);
+                context->callback(buffer_token, context->tabela, context->continueTabela, context->tokens_enum, context->teste, context->inBlock, context->lastToken);
                 buffer_index = 0;
             }
             char temp[2] = {token[i], '\0'};
-            context->callback(temp, context->tabela, context->continueTabela, context->tokens_enum, context->teste);
+            context->callback(temp, context->tabela, context->continueTabela, context->tokens_enum, context->teste, context->inBlock, context->lastToken);
         }
     }
     if (buffer_index > 0) {
         buffer_token[buffer_index] = '\0';
-        context->callback(buffer_token, context->tabela, context->continueTabela, context->tokens_enum, context->teste);
+        context->callback(buffer_token, context->tabela, context->continueTabela, context->tokens_enum, context->teste, context->inBlock, context->lastToken);
     }
 }
 
@@ -44,8 +44,9 @@ void loadFile(const char* filename, const char* delimiters, const char* keep_del
     int continueTabela = 1;
     enum Tokens tokens_enum = BLANK;
     Syntax teste;
-    LoadFileContext context = {filename, delimiters, keep_delimiters, callback, tabela, &continueTabela, &tokens_enum, &teste};
-
+    int inBlock = -1;
+    char lastToken;
+    LoadFileContext context = {filename, delimiters, keep_delimiters, callback, tabela, &continueTabela, &tokens_enum, &teste, &inBlock, &lastToken};
     char buffer[1024];
     while (fgets(buffer, sizeof(buffer), file) != NULL && continueTabela == 1) {
         int i = 0;

@@ -12,10 +12,12 @@ typedef struct {
     int *continueTabela;
     enum Tokens *tokens_enum;
     Syntax *teste; 
+    int *inBlock;
+    char *lastToken;
 } LoadFileContext;
 
 
 void loadFile(const char *filename, const char *delimiters, const char *keep_delimiters, PrintCallback callback, KeywordEntry tabela[]);
-void processToken(const char* token, LoadFileContext* context);
+void processToken(char* token, LoadFileContext* context);
 
 #endif 
