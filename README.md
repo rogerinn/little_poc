@@ -70,7 +70,7 @@ Arquitetura base: <img src="https://media.discordapp.net/attachments/63820374760
     }
 };
 ```
-5) Base atual todo modelo de JIT e AOT funcionam independentes de SO, toda camada de supervisionamento é feita de forma rootless, com cgroups e namespaces melhorando isolamento, capacidade de compilação e interpretação para micro ou macros compilações e funções distribuídas.
+5) A Base atual de todo o modelo de JIT e AOT funcionam independentes de SO, toda camada de supervisionamento é feita de forma rootless, com cgroups e namespaces melhorando isolamento, capacidade de compilação e interpretação para micro ou macros compilações e funções distribuídas.
 ```javascript
 OPBLOCK: import
 OPCODE: "
