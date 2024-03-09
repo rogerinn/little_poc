@@ -134,6 +134,24 @@ int FnLet(char *str, enum Tokens *fn, Syntax *syntax, int *id, char *lastToken) 
         }
         for(int i = 0; i < syntax_table[*id].totalSyntaxes; i++){
             int totalTokens = syntax_table[*id].tokens[i].next_token_count;
+            if (strcmp(syntax_table[*id].tokens[i].next_tokens[counter], "VariableExpr") == 0) { 
+                if(strcspn(str, specialChars) != strlen(str)) {
+                   continue;
+                }
+                printf("VariableExpr: %s\n", str);
+                counter++;
+                OpCodesCounter++;
+                if(counter == totalTokens) {
+                    counter = 0;
+                    OpCodesCounter = 0;
+                    resetSyntax(fn, syntax);
+                    return 0;
+                }
+                return 0;
+            }
+        }
+        for(int i = 0; i < syntax_table[*id].totalSyntaxes; i++){
+            int totalTokens = syntax_table[*id].tokens[i].next_token_count;
             if (strcmp(syntax_table[*id].tokens[i].next_tokens[counter], "MultExpr") == 0) { 
                 if(strcspn(str, specialChars) != strlen(str)) {
                    continue;
@@ -161,27 +179,6 @@ int FnLet(char *str, enum Tokens *fn, Syntax *syntax, int *id, char *lastToken) 
                 return 0;
             }
         }
-        for(int i = 0; i < syntax_table[*id].totalSyntaxes; i++){
-            int totalTokens = syntax_table[*id].tokens[i].next_token_count;
-            if (strcmp(syntax_table[*id].tokens[i].next_tokens[counter], "VariableExpr") == 0) { 
-                if(strcspn(str, specialChars) != strlen(str)) {
-                   continue;
-                }
-                printf("VariableExpr: %s\n", str);
-                counter++;
-                OpCodesCounter++;
-                if(counter == totalTokens) {
-                    counter = 0;
-                    OpCodesCounter = 0;
-                    resetSyntax(fn, syntax);
-                    return 0;
-                }
-                return 0;
-            }
-        }
-        if(isInsideMultExpr <= 0) {
-            return 1;
-        } 
         return 0;
 }
 
@@ -234,6 +231,6 @@ int main(int argc, char *argv[]) {
     }
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("\n ------->> Tempo: %f segundos -------\n", cpu_time_used);
+    printf("\n ------->> Tempo: %f segundos <<-------\n", cpu_time_used);
     return result;
 }
