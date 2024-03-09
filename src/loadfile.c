@@ -44,9 +44,15 @@ void loadFile(const char* filename, const char* delimiters, const char* keep_del
     int continueTabela = 1;
     enum Tokens tokens_enum = BLANK;
     Syntax teste;
+<<<<<<< HEAD
     int inBlock = -1;
     char lastToken;
     LoadFileContext context = {filename, delimiters, keep_delimiters, callback, tabela, &continueTabela, &tokens_enum, &teste, &inBlock, &lastToken};
+=======
+    teste.let.count = 0;
+    LoadFileContext context = {filename, delimiters, keep_delimiters, callback, tabela, &continueTabela, &tokens_enum, &teste};
+
+>>>>>>> dbfc296 (update)
     char buffer[1024];
     while (fgets(buffer, sizeof(buffer), file) != NULL && continueTabela == 1) {
         int i = 0;

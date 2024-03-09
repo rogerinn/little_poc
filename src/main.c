@@ -15,7 +15,18 @@
 int (*FnInBlock)(const char *str, enum Tokens *tokens_enum, Syntax *Syntax);
 
 void resetSyntax(enum Tokens *fn, Syntax *syntax) {
+<<<<<<< HEAD
     memset(syntax, 0, sizeof(Syntax));
+=======
+    strcpy(syntax->let.token, "");
+    strcpy(syntax->let.VariableExpr, "");
+    strcpy(syntax->let.TermExpr, "");
+    for (int i = 0; i < syntax->let.OperatorsCount; i++) {
+        strcpy(syntax->let.Operators[i], ""); // Define cada elemento como uma string vazia
+    }
+    syntax->let.OperatorsCount = 0;
+    syntax->let.count = 0;
+>>>>>>> dbfc296 (update)
     FnInBlock = NULL;
     *fn = BLANK;
 }
@@ -87,6 +98,7 @@ struct SyntaxRule syntax_table[] = {
     }
 };
 
+<<<<<<< HEAD
 Tokens convertIntToToken(int value) {
     switch(value) {
         case 0:
@@ -99,6 +111,22 @@ Tokens convertIntToToken(int value) {
             return BLANK;
         default:
             return BLANK;
+=======
+int FnLet(const char *str, enum Tokens *fn, Syntax *Syntax) {
+    static int counter, OpCodesCounter;
+    if(*fn == BLANK) {
+        *fn = LET;
+        strcpy(Syntax->let.token, syntax_table[LET].keyword);
+        Syntax->let.count = syntax_table[LET].next_token_count; 
+        Syntax->let.OperatorsCount = 3; 
+        counter = 0;
+        OpCodesCounter = 0;
+        printf("OpBlock: %s\n", str);   
+        return 0;
+    } 
+    if(counter >= (Syntax->let.count -1)){ 
+        resetSyntax(fn, Syntax);
+>>>>>>> dbfc296 (update)
     }
 }
 
