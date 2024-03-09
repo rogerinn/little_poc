@@ -39,33 +39,33 @@ struct SyntaxRule syntax_table[] = {
     {"const", {"VariableExpr", "=", "\"", "VariableExpr", "\""}, 5}
 };
 
-int FnLet(const char *str, enum Tokens *fn, Syntax *Syntax) {
+int FnLet(const char *str, enum Tokens *fn, Syntax *syntax) {
     static int counter, OpCodesCounter;
     if(*fn == BLANK) {
         *fn = LET;
-        strcpy(Syntax->let.token, syntax_table[LET].keyword);
-        Syntax->let.count = syntax_table[LET].next_token_count; 
-        Syntax->let.OperatorsCount = 3; 
+        strcpy(syntax->let.token, syntax_table[LET].keyword);
+        syntax->let.count = syntax_table[LET].next_token_count; 
+        syntax->let.OperatorsCount = 3; 
         counter = 0;
         OpCodesCounter = 0;
         printf("OpBlock: %s\n", str);   
         return 0;
     } 
-    if(counter >= (Syntax->let.count -1)){ 
-        resetSyntax(fn, Syntax);
+    if(counter >= (syntax->let.count -1)){ 
+        resetSyntax(fn, syntax);
     }
     if (strcmp(syntax_table[LET].next_tokens[counter], "VariableExpr") == 0) { 
         if(strcspn(str, specialChars) != strlen(str)) {
             return 1;
         }
-        strcpy(Syntax->let.VariableExpr, str);
-        printf("Opcode VariableExpr: %s\n", Syntax->let.VariableExpr);
+        strcpy(syntax->let.VariableExpr, str);
+        printf("Opcode VariableExpr: %s\n", syntax->let.VariableExpr);
         counter++;
         return 0;
     }
     if (strcmp(str,syntax_table[LET].next_tokens[counter]) == 0) {
-        strcpy(Syntax->let.Operators[OpCodesCounter], str);
-        printf("Opcode signal: %s\n", Syntax->let.Operators[OpCodesCounter]);
+        strcpy(syntax->let.Operators[OpCodesCounter], str);
+        printf("Opcode signal: %s\n", syntax->let.Operators[OpCodesCounter]);
         counter++;
         return 0;
     } 
