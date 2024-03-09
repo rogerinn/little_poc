@@ -1,7 +1,10 @@
+import "aa";
+import 'aa';
+
 let aa = (a, a) => { 
     let name = "Rogerio";
-
-    let name1 = "Melissa";
+    console.log("aaa");
+    return name;
 };
 
-let name = [1,2,3,4];
+name = [1,2];

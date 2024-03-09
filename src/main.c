@@ -50,30 +50,40 @@ struct SyntaxRule syntax_table[] = {
                 {{"VariableExpr", "=", "VariableExpr", ";"}, 4},
                 {{"VariableExpr", "=", "[", "]", ";"}, 5},
                 {{"VariableExpr", "=", "{", "}", ";"}, 5}, 
-                {{"VariableExpr", "=", "{", "VariableExpr", "}", ";"}, 6}, 
-                {{"VariableExpr", "=", "\"", "VariableExpr", "\"", ";"}, 6}, 
-                {{"VariableExpr", "=", "\'", "VariableExpr", "\'", ";"}, 6}, 
                 {{"VariableExpr", "=", "[", "VariableExpr", "]", ";"}, 6}, 
-                {{"VariableExpr", "=", "[", "MultExpr", "]", ";"}, 5},
-                {{"VariableExpr", "=", "VariableExpr", "=", ">", "{", "}", ";"}, 8},  
+                {{"VariableExpr", "=", "[", "MultExpr", "]", ";"}, 6},
+                {{"VariableExpr", "=", "{", "VariableExpr", "}", ";"}, 6}, 
+                {{"VariableExpr", "=", "{", "MultExpr", "}", ";"}, 6},
+                {{"VariableExpr", "=", "\"", "VariableExpr", "\"", ";"}, 6}, 
+                {{"VariableExpr", "=", "\'", "VariableExpr", "\'", ";"}, 6},
+                {{"VariableExpr", "=", "VariableExpr", "=", ">", "VariableExpr", ";"}, 7}, 
                 {{"VariableExpr", "=", "VariableExpr", "=", ">", "{", "VariableExpr", "}", ";"}, 9},    
                 {{"VariableExpr", "=", "(", "MultExpr", ")", "=", ">", "{", "MultExpr", "}", ";"}, 11}
-            }, 12
+            }, 13
     },
     {
         "const", { 
+                {{"VariableExpr", ",", "VariableExpr", ";"}, 4},
                 {{"VariableExpr", "=", "VariableExpr", ";"}, 4},
                 {{"VariableExpr", "=", "[", "]", ";"}, 5},
                 {{"VariableExpr", "=", "{", "}", ";"}, 5}, 
-                {{"VariableExpr", ",", "VariableExpr", ",", "VariableExpr", ";"}, 6},
-                {{"VariableExpr", "=", "{", "VariableExpr", "}", ";"}, 6}, 
-                {{"VariableExpr", "=", "\"", "VariableExpr", "\"", ";"}, 6}, 
-                {{"VariableExpr", "=", "\'", "VariableExpr", "\'", ";"}, 6}, 
                 {{"VariableExpr", "=", "[", "VariableExpr", "]", ";"}, 6}, 
-                {{"VariableExpr", "=", "VariableExpr", "=", ">", "{", "}", ";"}, 8},  
+                {{"VariableExpr", "=", "[", "MultExpr", "]", ";"}, 6},
+                {{"VariableExpr", "=", "{", "VariableExpr", "}", ";"}, 6}, 
+                {{"VariableExpr", "=", "{", "MultExpr", "}", ";"}, 6},
+                {{"VariableExpr", "=", "\"", "VariableExpr", "\"", ";"}, 6}, 
+                {{"VariableExpr", "=", "\'", "VariableExpr", "\'", ";"}, 6},
+                {{"VariableExpr", "=", "VariableExpr", "=", ">", "VariableExpr", ";"}, 7}, 
                 {{"VariableExpr", "=", "VariableExpr", "=", ">", "{", "VariableExpr", "}", ";"}, 9},    
-                {{"VariableExpr", "=", "(", "VariableExpr", ",", "VariableExpr", ")", "=", ">", "{", "VariableExpr", "}", ";"}, 13},
-            }, 11
+                {{"VariableExpr", "=", "(", "MultExpr", ")", "=", ">", "{", "MultExpr", "}", ";"}, 11}
+            }, 13
+    },
+        {
+        "import", { 
+                {{"\"", "VariableExpr", "\"", ";"}, 4},
+                {{"\'", "VariableExpr", "\'", ";"}, 4},
+                {{"{", "VariableExpr", "}", ";"}, 4},
+            }, 3
     }
 };
 
