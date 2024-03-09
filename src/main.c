@@ -102,14 +102,14 @@ int FnLet(char *str, enum Tokens *fn, Syntax *syntax, int *id, char *lastToken) 
             return 0;
         }
         if (isInsideMultExpr) {
-            if(strcmp(map.lastToken[0], "(") == 0) {
-                map.lastToken[1] = ")";
-            }
-            if(strcmp(map.lastToken[0], "{") == 0) {
-                map.lastToken[1] = "}";
-            }
-            if(strcmp(map.lastToken[0], "[") == 0) {
-                map.lastToken[1] = "]";
+            char* replacements[] = {"(", "{", "["};
+            char* closing[] = {")", "}", "]"};
+
+            for (int i = 0; i < sizeof(replacements) / sizeof(replacements[0]); i++) {
+                if (strcmp(map.lastToken[0], replacements[i]) == 0) {
+                    map.lastToken[1] = closing[i];
+                    break; 
+                }
             }
             if (strcmp(str, map.lastToken[1]) != 0) {
                 strcpy(multExprValues[multExprValueCount], str);
