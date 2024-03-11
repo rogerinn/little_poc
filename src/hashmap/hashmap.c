@@ -3,7 +3,7 @@
 #include "hashmap.h"
 #include "tokens_enum.h"
 
-#define TAM 31
+#define TAM 11
 
 void aa () {
     
