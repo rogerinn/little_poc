@@ -1,6 +1,13 @@
 #ifndef KEYWORD_OPERATIONS_H
 #define KEYWORD_OPERATIONS_H
-#include "struct_map.h" 
+#define MAX_KEYWORD_LEN 50
+
+typedef struct KeywordEntry {
+    char keyword[MAX_KEYWORD_LEN];
+    void (*fn)();
+    int id;
+} KeywordEntry;
+
 
 void inicializarTabela(KeywordEntry t[]);
 int funcaoHash(const char *chave);

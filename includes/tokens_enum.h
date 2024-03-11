@@ -5,7 +5,10 @@ typedef enum Tokens {
     LET,
     CONST,
     IMPORT,
-    BLANK = -1
+    IGNORE = -2,
+    BLANK = -1,
 }Tokens;
+
+Tokens convertIntToToken(int value);
 
 #endif

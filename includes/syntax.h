@@ -1,22 +1,17 @@
 #ifndef SYNTAX_H
 #define SYNTAX_H
 
-#define MAX_TOKEN_LEN 50
-#define MAX_EXPR_LEN 50
-#define MAX_OPERATOR_LEN 1
-#define MAX_OPERATORS 10
+typedef struct TokensRule {
+    char next_tokens[50][20];
+    int next_token_count;
+} TokensRule;
 
-typedef struct VariableSyntax {
-    char token[MAX_TOKEN_LEN];
-    char VariableExpr[MAX_EXPR_LEN];
-    char Operators[MAX_OPERATORS][MAX_OPERATOR_LEN];
-    char TermExpr[MAX_EXPR_LEN];
-    int OperatorsCount;
-    int count;
-} VariableSyntax;
+typedef struct SyntaxRule {
+    char keyword[20];
+    TokensRule tokens[100];
+    int totalSyntaxes;
+} SyntaxRule;
 
-typedef struct Syntax {
-    VariableSyntax let;
-} Syntax;
+extern SyntaxRule syntax_table[];
 
 #endif

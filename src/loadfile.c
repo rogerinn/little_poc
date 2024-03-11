@@ -1,78 +1,82 @@
 #include <stdio.h>
 #include <string.h>
-#include "struct_callback.h"
-#include "struct_map.h"
+#include <stdlib.h>
+#include "loadfile.h"
+#include "parser.h"
+#include "hashmap.h"
 #include "tokens_enum.h"
 #include "syntax.h"
-#include "loadfile.h"
+#include "callback_struct.h"
+#include "callback_params.h"
 
-void processToken(char* token, LoadFileContext* context) {
-    if (strlen(token) == 1 && strchr(context->keep_delimiters, token[0]) != NULL) {
-        context->callback(token, context->tabela, context->continueTabela, context->tokens_enum, context->teste, context->inBlock, context->lastToken);
-        return;
-    }
-    
-    char buffer_token[strlen(token)];
-    int buffer_index = 0;
-    for (int i = 0; i < strlen(token); i++) {
-        if (strchr(context->keep_delimiters, token[i]) == NULL) {
-            buffer_token[buffer_index++] = token[i];
-        }
-        if (strchr(context->keep_delimiters, token[i]) != NULL) {
-            if (buffer_index > 0) {
-                buffer_token[buffer_index] = '\0';
-                context->callback(buffer_token, context->tabela, context->continueTabela, context->tokens_enum, context->teste, context->inBlock, context->lastToken);
-                buffer_index = 0;
-            }
-            char temp[2] = {token[i], '\0'};
-            context->callback(temp, context->tabela, context->continueTabela, context->tokens_enum, context->teste, context->inBlock, context->lastToken);
-        }
-    }
-    if (buffer_index > 0) {
-        buffer_token[buffer_index] = '\0';
-        context->callback(buffer_token, context->tabela, context->continueTabela, context->tokens_enum, context->teste, context->inBlock, context->lastToken);
-    }
-}
+#define INITIAL_BUFFER_SIZE 1024
+#define INITIAL_BUFFER_SIZE 1024
+#define BUFFER_INCREMENT 1024
 
-void loadFile(const char* filename, const char* delimiters, const char* keep_delimiters, PrintCallback callback, KeywordEntry tabela[]) {
-    FILE* file = fopen(filename, "r");
+void loadFile(LoadFileContext *context) {
+    FILE* file = fopen(context->filename, "r");
     if (file == NULL) {
         perror("Erro ao abrir o arquivo");
         return;
     }
 
-    int continueTabela = 1;
-    enum Tokens tokens_enum = BLANK;
-    Syntax teste;
-<<<<<<< HEAD
-    int inBlock = -1;
-    char lastToken;
-    LoadFileContext context = {filename, delimiters, keep_delimiters, callback, tabela, &continueTabela, &tokens_enum, &teste, &inBlock, &lastToken};
-=======
-    teste.let.count = 0;
-    LoadFileContext context = {filename, delimiters, keep_delimiters, callback, tabela, &continueTabela, &tokens_enum, &teste};
+    char *buffer = (char *)malloc(INITIAL_BUFFER_SIZE * sizeof(char));
+    if (buffer == NULL) {
+        printf("Erro ao alocar memória para o buffer.\n");
+        fclose(file);
+        return;
+    }
 
->>>>>>> dbfc296 (update)
-    char buffer[1024];
-    while (fgets(buffer, sizeof(buffer), file) != NULL && continueTabela == 1) {
+    size_t buffer_size = INITIAL_BUFFER_SIZE;
+    char *line = NULL;
+    size_t length = 0;
+    int line_number = 1;
+    while ((*context->continueTable == 1) && fgets(buffer, buffer_size, file) != NULL) {
+        length = strlen(buffer);
+        while (length == buffer_size - 1 && buffer[length - 1] != '\n') {
+            buffer_size += BUFFER_INCREMENT;
+            buffer = realloc(buffer, buffer_size * sizeof(char));
+            if (buffer == NULL) {
+                printf("Erro ao realocar memória para o buffer.\n");
+                fclose(file);
+                free(buffer);
+                return;
+            }
+            if (fgets(buffer + length, BUFFER_INCREMENT, file) == NULL)
+                break;
+            length = strlen(buffer);
+        }
+
         int i = 0;
         int start = 0;
-        int length = strlen(buffer);
-        while (i < length && continueTabela == 1) {
-            if (strchr(delimiters, buffer[i]) != NULL) {
+        int char_position = 0;
+
+        while (i < length && *context->continueTable == 1) {
+            if (strchr(context->delimiters, buffer[i]) != NULL) {
                 if (start != i) {
                     buffer[i] = '\0';
-                    processToken(&buffer[start], &context);
+                    char_position += (i - start) + 1;
+                    context->line_number = &line_number;
+                    context->char_position = &char_position;
+                    parser(&buffer[start], context);
+                    char_position += (i - start) + 1;
                 }
                 start = i + 1;
             }
             i++;
         }
-        if (start != i && continueTabela == 1) {
+
+        if (start != i && *context->continueTable == 1) {
             buffer[i] = '\0';
-            processToken(&buffer[start], &context);
+            char_position += (i - start) + 1;
+            context->line_number = &line_number;
+            context->line_number = &char_position;
+            parser(&buffer[start], context);
+
         }
+        line_number++;
     }
 
     fclose(file);
+    free(buffer);
 }

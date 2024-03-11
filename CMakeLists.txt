@@ -8,7 +8,7 @@ set(INCLUDE_DIR "includes")
 set(SOURCE_DIR "src")
 #
 file(GLOB HEADERS  "${INCLUDE_DIR}/*.h")
-file(GLOB SOURCES  "${SOURCE_DIR}/*.c")
+file(GLOB SOURCES  "${SOURCE_DIR}/*.c", "${SOURCE_DIR}/**/*.c")
 #
 include_directories(${CMAKE_SOURCE_DIR}/includes/)
 #
