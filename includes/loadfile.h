@@ -12,7 +12,6 @@ typedef struct {
     KeywordEntry *table;
     int *continueTable;
     enum Tokens *tokens_enum;
-    int *inBlock;
     SyntaxRule *syntax_table;
     int *line_number;
     int *char_position;
