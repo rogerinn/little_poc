@@ -23,9 +23,8 @@ int main(int argc, char *argv[]) {
     if(result) { 
         int continueTable = 1;
         enum Tokens tokens_enum = BLANK;
-        int inBlock = -1;
         SyntaxRule *syntax = syntax_table;
-        LoadFileContext context = {argv[1], " \t\n", specialChars, table, &continueTable, &tokens_enum, &inBlock, syntax};
+        LoadFileContext context = {argv[1], " \t\n", specialChars, table, &continueTable, &tokens_enum, syntax};
         createToken(table);
         loadFile(&context);
     }

@@ -84,7 +84,8 @@ int validate (ProcessFileContext context) {
     }
     //set block
     if(stack.subStack[stack.count].token != NULL && search != NULL && *context.tokens_enum == BLANK) {
-        LOG_MSG("Block", "found: %s\n", stack.subStack[stack.count].token);
+        SPACING();
+        LOG_MSG("Block", "found: %s", stack.subStack[stack.count].token);
 
         if(isVariableExpr(context, search->id)){
             *context.tokens_enum = convertIntToToken(search->id);

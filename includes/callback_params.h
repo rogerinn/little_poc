@@ -11,7 +11,6 @@ typedef struct {
     int *char_position;
     int *continueTable;
     enum Tokens *tokens_enum;
-    int *inBlock;
     SyntaxRule *syntax_table;
 } ProcessFileContext;
 

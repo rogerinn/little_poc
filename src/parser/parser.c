@@ -15,7 +15,6 @@ void parser(char *token, LoadFileContext *context) {
         params.char_position = context->char_position;
         params.continueTable = context->continueTable;
         params.tokens_enum = context->tokens_enum;
-        params.inBlock = context->inBlock;
         params.syntax_table = context->syntax_table;
         callback(params);
         return;
@@ -36,7 +35,6 @@ void parser(char *token, LoadFileContext *context) {
                 params.char_position = context->char_position;
                 params.continueTable = context->continueTable;
                 params.tokens_enum = context->tokens_enum;
-                params.inBlock = context->inBlock;
                 params.syntax_table = context->syntax_table;
                 callback(params);
                 buffer_index = 0;
@@ -49,7 +47,6 @@ void parser(char *token, LoadFileContext *context) {
             params.char_position = context->char_position;
             params.continueTable = context->continueTable;
             params.tokens_enum = context->tokens_enum;
-            params.inBlock = context->inBlock;
             params.syntax_table = context->syntax_table;
             callback(params);
         }
@@ -63,7 +60,6 @@ void parser(char *token, LoadFileContext *context) {
         params.char_position = context->char_position;
         params.continueTable = context->continueTable;
         params.tokens_enum = context->tokens_enum;
-        params.inBlock = context->inBlock;
         params.syntax_table = context->syntax_table;
         callback(params);
     }
