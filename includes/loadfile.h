@@ -2,8 +2,8 @@
 #define LOAD_FILE_H
 #include "hashmap.h" 
 #include "syntax.h" 
-#include "callback_struct.h" 
-#include "callback_params.h"
+#include "controller_struct.h" 
+#include "controller_params.h"
 
 typedef struct {
     const char *filename;
