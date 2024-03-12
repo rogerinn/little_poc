@@ -5,20 +5,8 @@
 #include "hashmap.h"
 #include "tokens_enum.h"
 #include "syntax.h"
+#include "stack_struct.h"
 #include "custom_logger.h"
-
-int counter = 0;
-
-typedef struct SubStack {
-    char *token;
-} SubStack;
-
-typedef struct Stack {
-    SubStack subStack[100];
-    int count;
-} Stack;
-
-struct Stack stack;
 
 void resetStack(int totalTokens, int count, Tokens *tokens_enum) {
     if(totalTokens <= count) {
