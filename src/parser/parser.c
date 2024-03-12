@@ -5,6 +5,8 @@
 #include "custom_logger.h"
 #include "syntax.h"
 
+void callback(ProcessFileContext params);
+
 void parser(char *token, LoadFileContext *context) {
     if (strlen(token) == 1 && strchr(context->keep_delimiters, token[0]) != NULL && *context->continueTable == 1) {
         ProcessFileContext params;
