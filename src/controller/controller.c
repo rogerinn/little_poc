@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "callback_params.h"
-#include "callback_struct.h"
+#include "controller_params.h"
+#include "controller_struct.h"
 #include "hashmap.h"
 #include "tokens_enum.h"
 #include "syntax.h"

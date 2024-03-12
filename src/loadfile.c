@@ -6,8 +6,8 @@
 #include "hashmap.h"
 #include "tokens_enum.h"
 #include "syntax.h"
-#include "callback_struct.h"
-#include "callback_params.h"
+#include "controller_struct.h"
+#include "controller_params.h"
 
 #define INITIAL_BUFFER_SIZE 1024
 #define INITIAL_BUFFER_SIZE 1024
