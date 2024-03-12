@@ -1,5 +1,5 @@
-#ifndef CALLBACK_PARAMS_H
-#define CALLBACK_PARAMS_H
+#ifndef CONTROLLER_PARAMS_H
+#define CONTROLLER_PARAMS_H
 #include "hashmap.h"
 #include "syntax.h"
 
