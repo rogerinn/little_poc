@@ -20,8 +20,8 @@ int handlerStack (char *token) {
         stack.block = strdup(token);
         return 0;
     }
-    stack.count++;
     stack.subStack[stack.count].token = strdup(token);
+    stack.count++;
     return 0;
 }
 
@@ -30,6 +30,20 @@ int isBlock(ProcessFileContext context, int id) {
     LOG_MSG("Block", "found: %s", context.token);
     *context.tokens_enum = convertIntToToken(id);
     return 0;    
+}
+
+int isIdentifierExpr(ProcessFileContext context, int id) {
+    for(int i = 0; i < syntax_table[id].totalSyntaxes; i++){
+    int totalTokens = syntax_table[id].tokens[i].next_token_count;
+        if (strcmp(syntax_table[id].tokens[i].next_tokens[stack.count], "IdentifierExpr") == 0) { 
+            if(strcspn(context.token, context.specialChars) == strlen(context.token)) {
+                LOG_MSG("IdentifierExpr", "found: %s", context.token);
+                resetStack(totalTokens, stack.count, context.tokens_enum);
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
 
 int validate (ProcessFileContext context) {
@@ -51,7 +65,10 @@ int validate (ProcessFileContext context) {
         isBlock(context, search->id);
         return 0;
     }
-    return 0;
+    //Set IdentifierExpr
+    if(stack.block != NULL && search == NULL){
+        isIdentifierExpr(context, *context.tokens_enum);
+    }
 }
 
 void callback (ProcessFileContext context) {
