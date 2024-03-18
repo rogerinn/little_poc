@@ -46,6 +46,18 @@ int isIdentifierExpr(ProcessFileContext context, int id) {
     return 0;
 }
 
+int isOpcode(ProcessFileContext context, int id) {
+    for(int IteratorOpcode = 0; IteratorOpcode < syntax_table[id].totalSyntaxes; IteratorOpcode++) {
+        int totalTokens = syntax_table[id].tokens[IteratorOpcode].next_token_count;
+        if (strcmp(context.token,syntax_table[id].tokens[IteratorOpcode].next_tokens[stack.count]) == 0) {
+            LOG_MSG("OPCODE", "found: %s", context.token);
+            resetStack(totalTokens, stack.count, context.tokens_enum);
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int validate (ProcessFileContext context) {
     KeywordEntry *search = busca(context.table, context.token);
     //None declaration
@@ -65,17 +77,25 @@ int validate (ProcessFileContext context) {
         isBlock(context, search->id);
         return 0;
     }
-    //Set IdentifierExpr
+    //Set isIdentifierExpr
     if(stack.block != NULL && search == NULL){
-        isIdentifierExpr(context, *context.tokens_enum);
+        if(isIdentifierExpr(context, *context.tokens_enum))
+            return 0;
     }
+    //Set isOpCode
+    if(stack.block != NULL && search == NULL){
+        if(isOpcode(context, *context.tokens_enum))
+            return 0;
+    }
+    return 1;
 }
 
 void callback (ProcessFileContext context) {
     int error = validate(context);
-    if(error) {;
-        LOG_MSG("Error-validate", "Verifique os caracteres ou blocos.");
-        LOG_MSG("Error-validate", "Erro na linha: %d  elemento: %d { %s }" , *context.line_number, *context.char_position, context.token);
+    if(error) {
+        SPACING();
+        LOG_MSG("Validate", "Verifique os caracteres ou blocos.");
+        LOG_MSG("Validate", "Erro na linha: %d  elemento: %d { %s }" , *context.line_number, *context.char_position, context.token);
         *context.continueTable = 0;
         return;
     }
