@@ -58,6 +58,20 @@ int isOpcode(ProcessFileContext context, int id) {
     return 0;
 }
 
+int isVariableExpr(ProcessFileContext context, int id) {
+    for(int i = 0; i < syntax_table[id].totalSyntaxes; i++){
+    int totalTokens = syntax_table[id].tokens[i].next_token_count;
+        if (strcmp(syntax_table[id].tokens[i].next_tokens[stack.count], "VariableExpr") == 0) { 
+            if(strcspn(context.token, context.specialChars) == strlen(context.token)) {
+                LOG_MSG("VariableExpr", "found: %s", context.token);
+                resetStack(totalTokens, stack.count, context.tokens_enum);
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
 int validate (ProcessFileContext context) {
     KeywordEntry *search = busca(context.table, context.token);
     //None declaration
@@ -87,6 +101,11 @@ int validate (ProcessFileContext context) {
         if(isOpcode(context, *context.tokens_enum))
             return 0;
     }
+    //Set isVariableExpr
+    if(stack.block != NULL && search == NULL){
+        if(isVariableExpr(context, *context.tokens_enum))
+            return 0;
+    }    
     return 1;
 }
 
