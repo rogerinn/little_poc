@@ -66,9 +66,9 @@ void loadFile(LoadFileContext *context) {
         }
         if (start != i && *context->continueTable == 1) {
             buffer[i] = '\0';
-            char_position += (i - start) + 1;
+            char_position++;
             context->line_number = &line_number;
-            context->line_number = &char_position;
+            context->char_position = &char_position;
             parser(&buffer[start], context);
 
         }
