@@ -29,7 +29,8 @@ int main(int argc, char *argv[]) {
         loadFile(&context);
     }
     end = clock();
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC; 
+    printf("\n ------->> Compilação concluída com sucesso", cpu_time_used);
     printf("\n ------->> Tempo: %f segundos <<-------\n", cpu_time_used);
     return 1;
 }

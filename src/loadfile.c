@@ -55,28 +55,22 @@ void loadFile(LoadFileContext *context) {
             if (strchr(context->delimiters, buffer[i]) != NULL) {
                 if (start != i) {
                     buffer[i] = '\0';
-                    char_position += (i - start) + 1;
                     context->line_number = &line_number;
                     context->char_position = &char_position;
                     parser(&buffer[start], context);
-                    char_position += (i - start) + 1;
                 }
                 start = i + 1;
             }
             i++;
         }
-
         if (start != i && *context->continueTable == 1) {
             buffer[i] = '\0';
-            char_position += (i - start) + 1;
             context->line_number = &line_number;
-            context->line_number = &char_position;
+            context->char_position = &char_position;
             parser(&buffer[start], context);
-
         }
         line_number++;
     }
-
     fclose(file);
     free(buffer);
 }

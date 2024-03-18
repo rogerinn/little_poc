@@ -8,6 +8,7 @@
 void callback(ProcessFileContext params);
 
 void parser(char *token, LoadFileContext *context) {
+    (*context->char_position)++;
     if (strlen(token) == 1 && strchr(context->keep_delimiters, token[0]) != NULL && *context->continueTable == 1) {
         ProcessFileContext params;
         params.token = token; 
@@ -42,6 +43,7 @@ void parser(char *token, LoadFileContext *context) {
                 buffer_index = 0;
             }
             char temp[2] = {token[i], '\0'};
+            (*context->char_position)++;
             ProcessFileContext params;
             params.token = temp; 
             params.table = context->table;

@@ -8,10 +8,12 @@ Tokens convertIntToToken(int value) {
             return CONST;
         case 2:
             return IMPORT;
-        case -1:
-            return BLANK;
+        case -3:
+            return EXPR;
         case -2:
             return IGNORE;
+        case -1:
+            return BLANK;
         default:
             return BLANK;
     }
