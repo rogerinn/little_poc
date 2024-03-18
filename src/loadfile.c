@@ -55,7 +55,6 @@ void loadFile(LoadFileContext *context) {
             if (strchr(context->delimiters, buffer[i]) != NULL) {
                 if (start != i) {
                     buffer[i] = '\0';
-                    char_position++;
                     context->line_number = &line_number;
                     context->char_position = &char_position;
                     parser(&buffer[start], context);
@@ -66,11 +65,9 @@ void loadFile(LoadFileContext *context) {
         }
         if (start != i && *context->continueTable == 1) {
             buffer[i] = '\0';
-            char_position++;
             context->line_number = &line_number;
             context->char_position = &char_position;
             parser(&buffer[start], context);
-
         }
         line_number++;
     }
