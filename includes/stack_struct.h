@@ -7,6 +7,7 @@ typedef struct SubStack {
 
 typedef struct Stack {
     SubStack subStack[100];
+    char *block;
     int count;
 } Stack;
 
