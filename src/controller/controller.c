@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include "controller_params.h"
 #include "controller_struct.h"
 #include "hashmap.h"
@@ -32,44 +33,63 @@ int isBlock(ProcessFileContext context, int id) {
     return 0;    
 }
 
-int isIdentifierExpr(ProcessFileContext context, int id) {
+bool isIdentifierExpr(ProcessFileContext context, int id) {
     for(int i = 0; i < syntax_table[id].totalSyntaxes; i++){
     int totalTokens = syntax_table[id].tokens[i].next_token_count;
         if (strcmp(syntax_table[id].tokens[i].next_tokens[stack.count], "IdentifierExpr") == 0) { 
             if(strcspn(context.token, context.specialChars) == strlen(context.token)) {
                 LOG_MSG("IdentifierExpr", "found: %s", context.token);
                 resetStack(totalTokens, stack.count, context.tokens_enum);
-                return 1;
+                return true;
             }
         }
     }
-    return 0;
+    return false;
 }
 
-int isOpcode(ProcessFileContext context, int id) {
+bool isOpcode(ProcessFileContext context, int id) {
     for(int IteratorOpcode = 0; IteratorOpcode < syntax_table[id].totalSyntaxes; IteratorOpcode++) {
         int totalTokens = syntax_table[id].tokens[IteratorOpcode].next_token_count;
         if (strcmp(context.token,syntax_table[id].tokens[IteratorOpcode].next_tokens[stack.count]) == 0) {
             LOG_MSG("OPCODE", "found: %s", context.token);
             resetStack(totalTokens, stack.count, context.tokens_enum);
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
-int isVariableExpr(ProcessFileContext context, int id) {
+
+bool isMultExpr(ProcessFileContext context, int id) {
+    for(int i = 0; i < syntax_table[id].totalSyntaxes; i++){
+    int totalTokens = syntax_table[id].tokens[i].next_token_count;
+        if (strcmp(syntax_table[id].tokens[i].next_tokens[stack.count], "MultExpr") == 0) { 
+            if(strcspn(context.token, context.specialChars) == strlen(context.token)) {
+                LOG_MSG("MultExpr", "found: %s", context.token);
+                resetStack(totalTokens, stack.count, context.tokens_enum);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool isVariableExpr(ProcessFileContext context, int id) {
     for(int i = 0; i < syntax_table[id].totalSyntaxes; i++){
     int totalTokens = syntax_table[id].tokens[i].next_token_count;
         if (strcmp(syntax_table[id].tokens[i].next_tokens[stack.count], "VariableExpr") == 0) { 
             if(strcspn(context.token, context.specialChars) == strlen(context.token)) {
+               if(isMultExpr(context, id)) {
+                  return true;
+               }
+               
                 LOG_MSG("VariableExpr", "found: %s", context.token);
                 resetStack(totalTokens, stack.count, context.tokens_enum);
-                return 1;
+                return true;
             }
         }
     }
-    return 0;
+    return false;
 }
 
 int validate (ProcessFileContext context) {
@@ -91,21 +111,15 @@ int validate (ProcessFileContext context) {
         isBlock(context, search->id);
         return 0;
     }
-    //Set isIdentifierExpr
+    //Set OpCodes
     if(stack.block != NULL && search == NULL){
         if(isIdentifierExpr(context, *context.tokens_enum))
             return 0;
-    }
-    //Set isOpCode
-    if(stack.block != NULL && search == NULL){
         if(isOpcode(context, *context.tokens_enum))
             return 0;
-    }
-    //Set isVariableExpr
-    if(stack.block != NULL && search == NULL){
         if(isVariableExpr(context, *context.tokens_enum))
             return 0;
-    }    
+    }  
     return 1;
 }
 
